@@ -13,10 +13,12 @@ struct AnswerCheck: Identifiable {
     var answerId: Int
 }
 
-struct submitAnswer{
+struct submitAnswer:Codable{
     let answer : [Answer]
-    struct Answer {
+    struct Answer: Codable {
         var id:Int
-        var value: Any
+        var singleChoiceVal:Int
+        var choiceValue: [Int]
+        var value : String
     }
 }

@@ -9,6 +9,8 @@ import SwiftUI
 
 struct Questions: View {
     @EnvironmentObject var surveyManager : SurveyManager
+    @Environment(\.presentationMode) var presentationMode
+    var function: () -> Void
     var body: some View {
         let _ = print("called print in question view",surveyManager.currentQuestion)
         if(surveyManager.isFirstQuestion){
@@ -20,6 +22,9 @@ struct Questions: View {
         if(surveyManager.allQuestionAnswered){
             Button("Submit"){
                 print("Answers Collected SO far is",surveyManager.collectedAnswers)
+                surveyManager.submitSurvey()
+                presentationMode.wrappedValue.dismiss()
+                self.function()
             }
         }
     }

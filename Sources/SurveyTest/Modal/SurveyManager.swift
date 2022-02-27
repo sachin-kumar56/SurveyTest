@@ -59,6 +59,28 @@ class SurveyManager: ObservableObject {
         }
     }
     
+    func submitSurvey(){
+        guard let url = URL(string: "http://sample.surveysparrow.test/api/internal/offline-app/v3/post-sdk-data") else{ return }
+        do {
+            let jsonData = try JSONEncoder().encode(collectedAnswers)
+            let jsonString = String(data: jsonData, encoding: .utf8)
+            let body: [String:String] = ["Answers":(jsonString)!]
+            
+            let finalBody = try! JSONSerialization.data(withJSONObject: body)
+            
+            var request = URLRequest(url: url)
+            request.httpMethod="POST"
+            request.httpBody=finalBody
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            
+            URLSession.shared.dataTask(with: request){(data,response,error) in print(data)}.resume()
+        } catch{
+            print(error)
+        }
+
+        
+    }
+    
     func goToNextQuestion(){
         if index + 1 < length {
             index += 1
@@ -79,9 +101,23 @@ class SurveyManager: ObservableObject {
     }
     
     func selectedAnswer(answer:Any){
-        let ans = submitAnswer.Answer(id: currentQuestion.id, value: answer)
-        collectedAnswers.append(ans)
-        goToNextQuestion()
+        print("obtained current question is",currentQuestion)
+        if(currentQuestion.type == "Rating"){
+            let ans = submitAnswer.Answer(id: currentQuestion.id, singleChoiceVal: answer as! Int, choiceValue: [], value: "")
+            collectedAnswers.append(ans)
+            goToNextQuestion()
+        }
+        else if(currentQuestion.type == "Text"){
+            let ans = submitAnswer.Answer(id: currentQuestion.id, singleChoiceVal: -1 , choiceValue: [], value: answer as! String)
+            collectedAnswers.append(ans)
+            goToNextQuestion()
+        }
+        else{
+            let ans = submitAnswer.Answer(id: currentQuestion.id, singleChoiceVal: -1, choiceValue: answer as! [Int], value: "")
+            collectedAnswers.append(ans)
+            goToNextQuestion()
+        }
+
     }
     
     func setShowQuestionList(){
