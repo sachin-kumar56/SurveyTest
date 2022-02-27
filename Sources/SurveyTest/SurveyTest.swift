@@ -2,7 +2,7 @@ import SwiftUI
 
 public struct SurveyTest: View {
     @StateObject var surveyManager = SurveyManager()
-    var presentingVC: UIViewController?
+    public var presentingVC: UIViewController?
     func passedFunction() {
         self.presentingVC?.presentedViewController?.dismiss(animated: true)
     }
